@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:aop="http://www.springframework.org/schema/aop"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+https://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/tx
+https://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/aop
+https://www.springframework.org/schema/aop/spring-aop.xsd 
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+ <!-- Enable Transaction Management -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- DataSource Configuration -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/hello"/>
+        <property name="username" value="root"/>
+        <property name="password" value="sandip"/>
+    </bean>
+
+    <!-- Hibernate Properties -->
+    <bean id="hibernateProperties"
+          class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- SessionFactory Configuration -->
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties" ref="hibernateProperties"/>
+        <property name="packagesToScan" value="sandip12.springOrm"/> <!-- Package where your entities are located -->
+    </bean>
+
+    <!-- Transaction Manager -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+   
+ <!-- HibernateTemplate Configuration -->
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+     <bean id="empDao" class="sandip12.springOrm.dao.empDao">
+        <property name="hibernateTemplate" ref="hibernateTemplate" />
+    </bean>
+    
+</beans>
